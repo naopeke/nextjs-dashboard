@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { sql } from '@vercel/postgres'; // postgres in vercel
 import {
   CustomerField,
   CustomersTableType,
@@ -14,12 +14,12 @@ export async function fetchRevenue() {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
-    // console.log('Data fetch completed after 3 seconds.');
+    console.log('Data fetch completed after 3 seconds.');
 
     return data.rows;
   } catch (error) {
@@ -30,6 +30,7 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
+    // Fetch the last 5 invoices, sorted by date
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
@@ -60,6 +61,7 @@ export async function fetchCardData() {
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
          FROM invoices`;
 
+//In JavaScript, you can use the Promise.all() or Promise.allSettled() functions to initiate all promises at the same time. For example, in data.ts, we're using Promise.all() in the fetchCardData() function:
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
