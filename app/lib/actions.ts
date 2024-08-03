@@ -11,6 +11,10 @@ import { revalidatePath } from 'next/cache';
 // To redirect
 import { redirect } from 'next/navigation';
 
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
+
+
 //import Zod and define a schema that matches the shape of your form object. This schema will validate the formData before saving it to a database.
 const FormSchema = z.object({
     id: z.string(),
@@ -165,3 +169,22 @@ export async function deleteInvoice(id: string) {
     }
   }
 
+
+  export async function authenticate(
+    prevState: string | undefined,
+    formData: FormData,
+  ) {
+    try {
+      await signIn('credentials', formData);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case 'CredentialsSignin':
+            return 'Invalid credentials.';
+          default:
+            return 'Something went wrong.';
+        }
+      }
+      throw error;
+    }
+  }
